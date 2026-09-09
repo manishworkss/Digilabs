@@ -164,19 +164,28 @@ body {
   }
 }
 
-@keyframes float-particle {
+@keyframes glow-breathe {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+@keyframes float-particle-arc {
   0% {
     transform: translate(0, 0);
     opacity: 0;
   }
-  15% {
-    opacity: 0.8;
+  20% {
+    opacity: 0.6;
   }
-  85% {
-    opacity: 0.8;
+  80% {
+    opacity: 0.4;
   }
   100% {
-    transform: translate(110vw, -40vh);
+    transform: translate(110vw, -15vh);
     opacity: 0;
   }
 }
