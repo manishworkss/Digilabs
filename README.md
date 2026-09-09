@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NOVA Landing Page
 
-## Getting Started
+A premium, Apple-inspired, single-page performance marketing landing page built for "NOVA".
 
-First, run the development server:
+## Technology Stack
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Animation**: Framer Motion
+- **Forms**: React Hook Form + Zod
+- **Icons**: Lucide React
 
+## Development Setup
+
+First, install dependencies:
+```bash
+npm install
+```
+
+Copy the `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
+```
+
+Run the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Lead Form Setup (Google Apps Script)
 
-## Learn More
+The Lead Form is designed to write directly to a Google Sheet via a Google Apps Script Web App endpoint, avoiding the need for a dedicated backend.
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Create the Google Sheet
+1. Create a new Google Sheet where you want leads to be saved.
+2. (Optional) Name your columns in the first row: `Date`, `Name`, `Email`, `Company`, `Budget`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Create the Apps Script
+1. In your Google Sheet, click **Extensions > Apps Script**.
+2. Replace the default code with the following script:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```javascript
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var rowData = [
+      new Date(),
+      data.name,
+      data.email,
+      data.company,
+      data.budget
+    ];
+    
+    // Write to the first empty row
+    sheet.appendRow(rowData);
+    
+    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+```
 
-## Deploy on Vercel
+### 3. Deploy the Web App
+1. Click the **Deploy** button (top right) -> **New deployment**.
+2. Click the gear icon next to "Select type" and choose **Web app**.
+3. Configure the settings exactly as follows:
+   - **Execute as**: `Me (your email)`
+   - **Who has access**: `Anyone` *(Crucial step, or it will require authentication)*
+4. Click **Deploy** and authorize the script when prompted.
+5. Copy the generated **Web app URL**.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. Configure the Environment
+Add the URL you copied to your `.env.local` file:
+```env
+NEXT_PUBLIC_FORM_ENDPOINT=https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Your form will now securely transmit leads directly to your Google Sheet without exposing credentials!
+
+---
+
+## Google Tag Manager (GTM) Setup
+
+This project includes built-in Google Tag Manager support. It safely tracks the `lead_form_submit` event without hardcoding credentials in the codebase.
+
+### Configuration
+To enable GTM, add your Container ID to the `.env.local` file:
+```env
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+```
+
+### Events Tracked
+- **`lead_form_submit`**: Fires automatically when a user successfully submits the lead form.
+
+### Verification
+If `NEXT_PUBLIC_GTM_ID` is empty, the GTM script will not load, but the `window.dataLayer.push` commands will still fail silently without throwing console errors.
