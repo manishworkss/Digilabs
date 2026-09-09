@@ -1,177 +1,204 @@
 "use client";
 
-import { useRef } from "react";
-import Image from "next/image";
-import { motion, useMotionTemplate, useMotionValue, useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion";
 import { Crosshair, Layers, BarChart3 } from "lucide-react";
 import { SYSTEM_SECTION } from "@/lib/constants";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-// Map icon names to components
 const iconMap = {
   Crosshair,
   Layers,
   BarChart3,
 } as const;
 
-function SystemCard({
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
+function AssemblyCard({
   card,
   index,
+  progress,
+  isMobile,
 }: {
   card: typeof SYSTEM_SECTION.cards[0];
   index: number;
+  progress: any; // scrollYProgress
+  isMobile: boolean;
 }) {
   const prefersReduced = useReducedMotion();
 
-  // Colors for glowing orbs based on index
-  const colors = [
-    { from: "from-blue-600", to: "to-cyan-400", shadow: "group-hover:shadow-[0_0_80px_-20px_rgba(56,189,248,0.4)]" }, // Strategy
-    { from: "from-purple-600", to: "to-pink-500", shadow: "group-hover:shadow-[0_0_80px_-20px_rgba(217,70,239,0.4)]" }, // Creative
-    { from: "from-emerald-500", to: "to-teal-400", shadow: "group-hover:shadow-[0_0_80px_-20px_rgba(45,212,191,0.4)]" }, // Optimization
-  ];
+  // Animation mapping:
+  // Card 0: starts moving at 0.0, locks at 0.3
+  // Card 1: starts moving at 0.25, locks at 0.55
+  // Card 2: starts moving at 0.5, locks at 0.8
+  const pStart = index * 0.25;
+  const pEnd = pStart + 0.3;
 
-  const color = colors[index % colors.length];
+  // Desktop: Horizontal row Assembly
+  const xOffsetDesktop = index === 0 ? "-105%" : index === 1 ? "0%" : "105%";
+  const yOffsetDesktop = "0%";
+  
+  // Mobile: Vertical column Assembly
+  const xOffsetMobile = "0%";
+  const yOffsetMobile = index === 0 ? "-105%" : index === 1 ? "0%" : "105%";
 
-  // Hover Glow Tracker
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  // Transform values based on scroll progress
+  const x = useTransform(
+    progress,
+    [0, pStart, pEnd, 1],
+    ["-200vw", "-200vw", isMobile ? xOffsetMobile : xOffsetDesktop, isMobile ? xOffsetMobile : xOffsetDesktop]
+  );
 
-  function handleMouseMove({
-    currentTarget,
-    clientX,
-    clientY,
-  }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
+  const y = useTransform(
+    progress,
+    [0, pStart, pEnd, 1],
+    ["0%", "0%", isMobile ? yOffsetMobile : yOffsetDesktop, isMobile ? yOffsetMobile : yOffsetDesktop]
+  );
+
+  const scale = useTransform(
+    progress,
+    [0, pStart, pEnd, 1],
+    [0.5, 0.5, 1, 1]
+  );
+
+  const opacity = useTransform(
+    progress,
+    [0, pStart, pStart + 0.1, pEnd, 1],
+    [0, 0, 1, 1, 1]
+  );
+
+  // Intense lighting flare precisely when the part "locks" into the machine
+  const glowOpacity = useTransform(
+    progress,
+    [pEnd - 0.1, pEnd, pEnd + 0.1],
+    [0, 1, 0] 
+  );
+
+  // Subtle persistent glow after landing
+  const persistentGlow = useTransform(
+    progress,
+    [pEnd - 0.05, pEnd],
+    [0, 1]
+  );
 
   const Icon = iconMap[card.icon];
+  
+  // Premium Neon Colors: Blue, Purple, Emerald
+  const color = index === 0 ? "rgba(56,189,248" : index === 1 ? "rgba(217,70,239" : "rgba(45,212,191"; 
+
+  const dynamicBg = useMotionTemplate`radial-gradient(circle at 50% 50%, ${color}, 0.25), transparent 70%)`;
+  const persistentBg = useMotionTemplate`radial-gradient(circle at 50% 0%, ${color}, 0.10), transparent 50%)`;
+  const iconBg = useMotionTemplate`linear-gradient(135deg, ${color}, 0.3), transparent)`;
+  const lineBg = useMotionTemplate`linear-gradient(90deg, transparent, ${color}, 0.8), transparent)`;
 
   return (
-    <ScrollReveal delay={0.15 + index * 0.1} className="h-full">
+    <motion.div
+      className="absolute w-[90vw] md:w-full max-w-[380px] h-[220px] md:h-[480px] rounded-[32px] border border-white/10 bg-[#050505]/90 backdrop-blur-3xl flex flex-col justify-between overflow-hidden shadow-2xl"
+      style={prefersReduced ? { x: isMobile ? xOffsetMobile : xOffsetDesktop, y: isMobile ? yOffsetMobile : yOffsetDesktop, scale: 1, opacity: 1 } : { x, y, scale, opacity }}
+    >
+      {/* 1. Impact Flare (Flashes when it lands) */}
       <motion.div
-        onMouseMove={handleMouseMove}
-        className={`group relative rounded-[32px] border border-white/5 bg-[#050505] overflow-hidden h-full min-h-[460px] flex flex-col justify-between transition-all duration-700 ${color.shadow}`}
-        whileHover={
-          prefersReduced
-            ? {}
-            : {
-                y: -8,
-                transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
-              }
-        }
-      >
-        {/* Intense Mouse Tracking Glow Layer (Apple Style Spotlight) */}
-        <motion.div
-          className="pointer-events-none absolute -inset-px rounded-[32px] opacity-0 transition duration-500 group-hover:opacity-100 z-30 mix-blend-screen"
-          style={{
-            background: useMotionTemplate`radial-gradient(800px circle at ${mouseX}px ${mouseY}px, rgba(255,255,255,0.06), transparent 40%)`,
-          }}
-        />
+        className="absolute inset-0 pointer-events-none mix-blend-screen z-0"
+        style={{ background: dynamicBg, opacity: glowOpacity }}
+      />
+      
+      {/* 2. Persistent Ambient Glow */}
+      <motion.div
+        className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] pointer-events-none mix-blend-screen z-0"
+        style={{ background: persistentBg, opacity: persistentGlow }}
+      />
 
-        {/* Dynamic Glowing Orb (Apple 'Surprise and Shine' Style) */}
-        <div className="absolute inset-0 z-0 overflow-hidden rounded-[32px] pointer-events-none">
-          <motion.div
-            className={`absolute w-[300px] h-[300px] rounded-full bg-gradient-to-br ${color.from} ${color.to} blur-[80px] opacity-20 mix-blend-screen`}
-            animate={
-              prefersReduced
-                ? {}
-                : {
-                    x: ["-20%", "40%", "-10%", "-20%"],
-                    y: ["-20%", "10%", "40%", "-20%"],
-                    scale: [1, 1.3, 0.9, 1],
-                  }
-            }
-            transition={{
-              duration: 15 + index * 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            style={{
-              top: index === 1 ? "-10%" : "auto",
-              bottom: index !== 1 ? "-10%" : "auto",
-              left: index === 0 ? "-10%" : "auto",
-              right: index !== 0 ? "-10%" : "auto",
-            }}
-          />
-          {/* Intense center glow on hover */}
-          <div className="absolute inset-0 bg-black/60 transition-opacity duration-700 group-hover:opacity-30 z-10" />
-        </div>
-
-        {/* 3D Floating Icon / Top Section */}
-        <div className="relative z-20 p-8 pt-10">
-          <div className="flex items-start justify-between">
+      <div className="relative z-20 p-6 md:p-8 pt-6 md:pt-10">
+        <div className="flex items-start justify-between">
+          <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
+            <Icon className="text-white relative z-10 w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
             <motion.div 
-              className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-2xl relative overflow-hidden"
-              whileHover={{ scale: 1.1, rotate: index % 2 === 0 ? 5 : -5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${color.from} ${color.to} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
-              <Icon
-                size={28}
-                className="text-white/80 transition-all duration-500 group-hover:text-white group-hover:scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                strokeWidth={1.5}
-              />
-            </motion.div>
-            
-            <span className="text-[11px] font-bold text-white/30 tracking-[0.3em] font-mono">
-              {card.number}
-            </span>
+               className="absolute inset-0 z-0"
+               style={{ background: iconBg, opacity: persistentGlow }}
+            />
           </div>
+          <span className="text-[10px] md:text-[11px] font-bold text-white/30 tracking-[0.3em] font-mono mt-2">
+            {card.number}
+          </span>
         </div>
+      </div>
 
-        {/* Bottom Content with Floating Text Effect */}
-        <div className="relative z-20 p-8 pb-10 mt-auto">
-          <motion.div
-            initial={{ y: 0 }}
-            whileHover={prefersReduced ? {} : { y: -5 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <h3 className="text-3xl font-semibold text-white tracking-tight mb-4 drop-shadow-lg">
-              {card.title}
-            </h3>
-            <p className="text-nova-gray text-lg leading-relaxed group-hover:text-white/90 transition-colors duration-500">
-              {card.description}
-            </p>
-          </motion.div>
-          
-          {/* Neon animated bottom border line inside the card */}
-          <div className="absolute bottom-0 left-8 right-8 h-[2px] bg-white/5 overflow-hidden rounded-t-full">
-             <motion.div 
-                className={`absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-100`}
-                animate={{ x: ["-100%", "300%"] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-             />
-          </div>
-        </div>
-      </motion.div>
-    </ScrollReveal>
+      <div className="relative z-20 p-6 md:p-8 pb-6 md:pb-10 mt-auto">
+        <h3 className="text-xl md:text-3xl font-semibold text-white tracking-tight mb-2 md:mb-4 drop-shadow-md">
+          {card.title}
+        </h3>
+        <p className="text-nova-gray text-sm md:text-lg leading-relaxed line-clamp-2 md:line-clamp-none">
+          {card.description}
+        </p>
+      </div>
+
+      {/* 3. Bottom Energy Line */}
+      <motion.div 
+         className="absolute bottom-0 left-0 right-0 h-[2px] z-30"
+         style={{ background: lineBg, opacity: persistentGlow }}
+      />
+    </motion.div>
   );
 }
 
 export function PerformanceSystem() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  // Fade out the heading and move it up as the cards assemble to keep focus on the machine
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const headerScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.95]);
+  const headerY = useTransform(scrollYProgress, [0, 0.15], [0, -100]);
+
   return (
-    <SectionWrapper id="system">
-      <ScrollReveal>
-        <p className="text-sm text-nova-muted mb-6 uppercase tracking-[0.2em]">
-          {SYSTEM_SECTION.eyebrow}
-        </p>
-      </ScrollReveal>
+    <div ref={containerRef} className="relative h-[400vh] bg-black" id="system">
+      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden">
+        
+        {/* Background Grid to give a "blueprint / factory" feel */}
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10 pointer-events-none" />
 
-      <ScrollReveal delay={0.1}>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1] text-nova-white max-w-3xl mb-14 md:mb-20">
-          {SYSTEM_SECTION.heading}
-        </h2>
-      </ScrollReveal>
+        {/* Section Header */}
+        <motion.div 
+          className="absolute top-[10%] md:top-[15%] w-full text-center px-6 z-10"
+          style={{ opacity: headerOpacity, scale: headerScale, y: headerY }}
+        >
+          <p className="text-xs md:text-sm text-nova-muted mb-4 md:mb-6 uppercase tracking-[0.2em]">
+            {SYSTEM_SECTION.eyebrow}
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1] text-nova-white max-w-3xl mx-auto">
+            {SYSTEM_SECTION.heading}
+          </h2>
+        </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
-        {SYSTEM_SECTION.cards.map((card, i) => (
-          <SystemCard key={card.title} card={card as any} index={i} />
-        ))}
+        {/* Machine Assembly Area */}
+        <div className="relative w-full max-w-7xl mx-auto flex items-center justify-center h-full">
+          {SYSTEM_SECTION.cards.map((card, i) => (
+            <AssemblyCard 
+              key={card.title} 
+              card={card as any} 
+              index={i} 
+              progress={scrollYProgress} 
+              isMobile={isMobile}
+            />
+          ))}
+        </div>
+        
       </div>
-    </SectionWrapper>
+    </div>
   );
 }

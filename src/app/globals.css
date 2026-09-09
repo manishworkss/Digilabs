@@ -152,6 +152,35 @@ body {
   }
 }
 
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -3000;
+  }
+}
+
+@keyframes dash-flow-reverse {
+  to {
+    stroke-dashoffset: 3000;
+  }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(110vw, -40vh);
+    opacity: 0;
+  }
+}
+
 /* ============================================================
    Utility: Gradient Text
    ============================================================ */

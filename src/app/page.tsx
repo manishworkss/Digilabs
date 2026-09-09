@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/layout/Navbar";
-import { LocalNav } from "@/components/layout/LocalNav";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingCTA } from "@/components/layout/FloatingCTA";
 
@@ -31,7 +30,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <LocalNav />
       <main id="main-content">
         <Hero />
         <Statement />
