@@ -132,7 +132,7 @@ export function Hero() {
           className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center gap-4"
           variants={variants}
         >
-          <Button href="#contact" size="lg" className="rounded-full px-8">
+          <Button href="#contact" size="lg" className="rounded-full px-8 !bg-none !bg-[#7bc4e9] text-white hover:!brightness-110">
             {HERO.primaryCTA}
           </Button>
           <Button href={HERO.secondaryCTAHref} variant="secondary" size="lg" className="rounded-full px-8 bg-nova-white/10 text-nova-white hover:bg-nova-white/20 border-none">

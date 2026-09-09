@@ -6,184 +6,142 @@ import { PROCESS_SECTION } from "@/lib/constants";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 // ============================================================
-// SYSTEM MACHINE VISUALS
+// CONSTANTS & DATA
 // ============================================================
 
-const MachineVisual = ({ progress }: { progress: MotionValue<number> }) => {
-  const prefersReducedMotion = useReducedMotion();
+const STEP_METADATA = [
+  ["MARKET INTELLIGENCE", "AUDIENCE INSIGHTS", "OPPORTUNITY MAPPING"],
+  ["SYSTEM DESIGN", "CHANNEL STRATEGY", "PERFORMANCE FRAMEWORK"],
+  ["CAMPAIGN EXECUTION", "REAL-TIME OPTIMIZATION", "PERFORMANCE MONITORING"],
+  ["SCALE WINNING STRATEGIES", "INCREASE EFFICIENCY", "COMPOUND GROWTH"]
+];
 
-  // Mappings for progress to opacity and transforms
-  // Phase 1 (0 -> 0.25): Discover activates
-  // Phase 2 (0.25 -> 0.5): Build assembles
-  // Phase 3 (0.5 -> 0.75): Launch activates
-  // Phase 4 (0.75 -> 1.0): Scale completes
+const MICRO_NODES = [
+  { top: "27.5%", labels: ["DATA", "SIGNALS", "INSIGHTS"] },
+  { top: "52.5%", labels: ["CONNECT", "INTEGRATE", "OPTIMIZE"] },
+  { top: "77.5%", labels: ["DEPLOY", "MEASURE", "ITERATE"] }
+];
 
-  const smoothProgress = useSpring(progress, { stiffness: 100, damping: 20 });
+const NODE_POSITIONS = ["15%", "40%", "65%", "90%"];
 
-  // Node 1: Discover
-  const node1Opacity = useTransform(smoothProgress, [0, 0.1, 1], [0, 1, 1]);
-  const node1Y = useTransform(smoothProgress, [0.2, 0.4], [0, -60]);
+// ============================================================
+// SVG COMPONENTS
+// ============================================================
 
-  // Node 2: Build
-  const node2Opacity = useTransform(smoothProgress, [0.2, 0.4, 1], [0, 1, 1]);
-  const node2Y = useTransform(smoothProgress, [0.2, 0.4], [40, 0]);
-  const buildBlock1X = useTransform(smoothProgress, [0.3, 0.4], [-20, 0]);
-  const buildBlock2X = useTransform(smoothProgress, [0.3, 0.4], [20, 0]);
+const Node1Discover = ({ isActive, reducedMotion }: { isActive: boolean, reducedMotion: boolean }) => (
+  <div className="relative flex items-center justify-center w-12 h-12">
+    <motion.div 
+      className="absolute inset-0 border border-sky-500/20 rounded-full"
+      animate={{ rotate: reducedMotion ? 0 : 360 }}
+      transition={{ duration: 15, ease: "linear", repeat: Infinity }}
+    />
+    <motion.div 
+      className="absolute inset-1 border border-sky-400/30 rounded-full"
+      animate={{ rotate: reducedMotion ? 0 : -360 }}
+      transition={{ duration: 10, ease: "linear", repeat: Infinity }}
+    />
+    <div className={`w-3 h-3 rounded-full transition-all duration-700 ${isActive ? 'bg-sky-300 shadow-[0_0_15px_#38bdf8]' : 'bg-[#081e3d] border border-sky-500/50'}`} />
+    
+    {/* Micro orbiting points */}
+    {isActive && !reducedMotion && (
+      <>
+        <div className="absolute top-0 w-1 h-1 bg-sky-200 rounded-full animate-ping" />
+        <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-sky-300 rounded-full opacity-80" />
+      </>
+    )}
+  </div>
+);
 
-  // Connection 1 -> 2
-  const conn12PathLength = useTransform(smoothProgress, [0.3, 0.45], [0, 1]);
-
-  // Node 3: Launch
-  const node3Opacity = useTransform(smoothProgress, [0.45, 0.65, 1], [0, 1, 1]);
-  const node3Y = useTransform(smoothProgress, [0.45, 0.65], [40, 0]);
-  
-  // Connection 2 -> 3
-  const conn23PathLength = useTransform(smoothProgress, [0.55, 0.7], [0, 1]);
-
-  // Node 4: Scale
-  const node4Opacity = useTransform(smoothProgress, [0.7, 0.9, 1], [0, 1, 1]);
-  const node4ScaleY = useTransform(smoothProgress, [0.75, 0.9], [0, 1]);
-
-  // Connection 3 -> 4
-  const conn34PathLength = useTransform(smoothProgress, [0.8, 0.95], [0, 1]);
-
-  // Final System Glow
-  const systemGlowOpacity = useTransform(smoothProgress, [0.9, 1], [0, 0.4]);
-
-  return (
-    <div className="relative w-full h-[500px] flex items-center justify-center max-w-lg mx-auto">
-      {/* Background ambient glow when complete */}
-      <motion.div
-        style={{ opacity: systemGlowOpacity }}
-        className="absolute inset-0 bg-sky-900/20 rounded-full blur-[100px] pointer-events-none"
+const Node2Build = ({ isActive, reducedMotion }: { isActive: boolean, reducedMotion: boolean }) => (
+  <div className="relative flex items-center justify-center w-12 h-12 gap-1">
+    <motion.div 
+      className={`w-3 h-3 rounded-sm transition-all duration-700 ${isActive ? 'bg-sky-400/80 border-sky-300' : 'bg-[#081e3d] border-sky-500/30'} border`}
+      animate={isActive && !reducedMotion ? { y: [-2, 2, -2] } : {}}
+      transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
+    />
+    <div className="flex flex-col gap-1">
+      <motion.div 
+        className={`w-3 h-3 rounded-sm transition-all duration-700 delay-100 ${isActive ? 'bg-sky-300 shadow-[0_0_10px_#38bdf8]' : 'bg-[#081e3d] border border-sky-500/30'}`}
       />
+      <motion.div 
+        className={`w-3 h-3 rounded-sm transition-all duration-700 delay-200 ${isActive ? 'bg-sky-400/80 border-sky-300' : 'bg-[#081e3d] border-sky-500/30'} border`}
+        animate={isActive && !reducedMotion ? { y: [2, -2, 2] } : {}}
+        transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
+      />
+    </div>
+  </div>
+);
 
-      {/* Connection Paths SVG Layer */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 500">
-        <defs>
-          <linearGradient id="connGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.2" />
-            <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.2" />
-          </linearGradient>
-        </defs>
+const Node3Launch = ({ isActive }: { isActive: boolean }) => (
+  <div className="relative flex items-center justify-center w-12 h-12">
+    <div className={`absolute inset-1 rounded-full border transition-all duration-700 ${isActive ? 'border-sky-400/50' : 'border-sky-500/20'}`} />
+    <div className={`flex items-center justify-center w-6 h-6 rounded bg-[#081e3d] border transition-all duration-700 ${isActive ? 'border-sky-300 shadow-[0_0_12px_#38bdf8]' : 'border-sky-500/40'}`}>
+      <div className={`w-0 h-0 border-t-[4px] border-t-transparent border-l-[6px] border-b-[4px] border-b-transparent transition-all duration-700 ${isActive ? 'border-l-white' : 'border-l-sky-500/50'} ml-0.5`} />
+    </div>
+  </div>
+);
 
-        {/* Path 1 -> 2 */}
-        <motion.path
-          d="M 200 140 C 200 180, 200 200, 200 230"
-          fill="none"
-          stroke="url(#connGrad)"
-          strokeWidth="1.5"
-          style={{ pathLength: prefersReducedMotion ? 1 : conn12PathLength }}
-        />
+const Node4Scale = ({ isActive }: { isActive: boolean }) => (
+  <div className="relative flex items-end justify-center w-12 h-12 gap-1 pb-2">
+    <div className={`absolute inset-0 rounded-full border border-sky-500/20 transition-all duration-1000 ${isActive ? 'scale-110 opacity-50' : 'scale-100 opacity-20'}`} />
+    <div className={`w-1.5 transition-all duration-1000 ${isActive ? 'h-3 bg-sky-400/60' : 'h-2 bg-sky-500/20'}`} />
+    <div className={`w-1.5 transition-all duration-1000 delay-100 ${isActive ? 'h-5 bg-sky-400/80' : 'h-3 bg-sky-500/20'}`} />
+    <div className={`w-1.5 transition-all duration-1000 delay-200 ${isActive ? 'h-7 bg-sky-300 shadow-[0_0_12px_#38bdf8]' : 'h-4 bg-sky-500/20'}`} />
+  </div>
+);
 
-        {/* Path 2 -> 3 */}
-        <motion.path
-          d="M 200 270 C 200 300, 200 320, 200 350"
-          fill="none"
-          stroke="url(#connGrad)"
-          strokeWidth="1.5"
-          style={{ pathLength: prefersReducedMotion ? 1 : conn23PathLength }}
-        />
+// ============================================================
+// RIGHT PANELS (READOUTS)
+// ============================================================
 
-        {/* Path 3 -> 4 */}
-        <motion.path
-          d="M 200 390 C 200 410, 200 420, 200 440"
-          fill="none"
-          stroke="url(#connGrad)"
-          strokeWidth="1.5"
-          style={{ pathLength: prefersReducedMotion ? 1 : conn34PathLength }}
-        />
-      </svg>
-
-      {/* Node 1: Discover */}
-      <motion.div
-        className="absolute top-[160px] flex flex-col items-center justify-center"
-        style={{ opacity: node1Opacity, y: prefersReducedMotion ? -60 : node1Y }}
-      >
-        <div className="relative w-16 h-16 flex items-center justify-center">
-          <div className="absolute inset-0 border border-sky-400/30 rounded-full animate-[spin_10s_linear_infinite]" />
-          <div className="absolute inset-2 border border-sky-300/20 rounded-full animate-[spin_6s_linear_infinite_reverse]" />
-          <div className="w-4 h-4 bg-[#081e3d] border border-sky-400 rounded-full z-10 shadow-[0_0_12px_rgba(56,189,248,0.5)] flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-white rounded-full" />
-          </div>
-          {/* Signal dots */}
-          <div className="absolute -top-2 -right-2 w-1.5 h-1.5 bg-sky-300 rounded-full opacity-60" />
-          <div className="absolute -bottom-1 -left-3 w-1 h-1 bg-sky-200 rounded-full opacity-40" />
-        </div>
-        <span className="text-[10px] text-sky-400/60 uppercase tracking-widest mt-2 font-mono">Signal</span>
-      </motion.div>
-
-      {/* Node 2: Build */}
-      <motion.div
-        className="absolute top-[250px] flex flex-col items-center justify-center"
-        style={{ opacity: node2Opacity, y: prefersReducedMotion ? 0 : node2Y }}
-      >
-        <div className="relative w-20 h-12 flex items-center justify-center gap-1.5">
-          <motion.div
-            className="w-5 h-5 border border-sky-400/50 bg-[#040f1f] rounded-sm"
-            style={{ x: prefersReducedMotion ? 0 : buildBlock1X }}
-          />
-          <div className="w-6 h-6 border border-sky-300 bg-[#081e3d] rounded-sm shadow-[0_0_15px_rgba(56,189,248,0.4)] flex items-center justify-center">
-            <div className="w-2 h-2 bg-sky-200 rounded-sm" />
-          </div>
-          <motion.div
-            className="w-5 h-5 border border-sky-400/50 bg-[#040f1f] rounded-sm"
-            style={{ x: prefersReducedMotion ? 0 : buildBlock2X }}
-          />
-        </div>
-        <span className="text-[10px] text-sky-400/60 uppercase tracking-widest mt-2 font-mono">System</span>
-      </motion.div>
-
-      {/* Node 3: Launch */}
-      <motion.div
-        className="absolute top-[370px] flex flex-col items-center justify-center"
-        style={{ opacity: node3Opacity, y: prefersReducedMotion ? 0 : node3Y }}
-      >
-        <div className="relative w-16 h-10 flex items-end justify-center gap-1.5 border-b border-sky-400/30 pb-1">
-          <div className="w-2 h-3 bg-sky-400/40 rounded-t-sm" />
-          <div className="w-2 h-6 bg-sky-400/60 rounded-t-sm shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
-          <div className="w-2 h-4 bg-sky-400/40 rounded-t-sm" />
-          <div className="absolute -top-3 w-3 h-3 border border-sky-300 rounded bg-[#081e3d] flex items-center justify-center rotate-45">
-            <div className="w-1 h-1 bg-white rounded-full" />
-          </div>
-        </div>
-        <span className="text-[10px] text-sky-400/60 uppercase tracking-widest mt-3 font-mono">Execute</span>
-      </motion.div>
-
-      {/* Node 4: Scale */}
-      <motion.div
-        className="absolute top-[460px] flex flex-col items-center justify-center"
-        style={{ opacity: node4Opacity }}
-      >
-        <div className="relative w-24 h-16">
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 60">
-            <motion.path
-              d="M 10 50 Q 30 50, 50 30 T 90 10"
-              fill="none"
-              stroke="#38bdf8"
-              strokeWidth="2"
-              className="drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]"
-              style={{ pathLength: prefersReducedMotion ? 1 : node4ScaleY }}
-            />
-            <circle cx="90" cy="10" r="3" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
+const ReadoutPanel = ({ index, isActive }: { index: number, isActive: boolean }) => {
+  const titles = ["RESEARCH", "ARCHITECTURE", "EXECUTION", "GROWTH"];
+  return (
+    <div className={`w-40 h-24 border bg-[#01040a]/80 backdrop-blur-md rounded-lg p-3 flex flex-col justify-between transition-all duration-700 ${isActive ? 'border-sky-500/40 shadow-[0_0_20px_rgba(56,189,248,0.1)]' : 'border-white/5 opacity-50'}`}>
+      <div className="flex items-center gap-2">
+        <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-sky-400 animate-pulse' : 'bg-slate-700'}`} />
+        <span className={`text-[9px] font-mono tracking-widest ${isActive ? 'text-sky-300' : 'text-slate-500'}`}>{titles[index]}</span>
+      </div>
+      <div className="h-10 w-full flex items-center justify-center opacity-70">
+        {index === 0 && (
+          <svg className="w-full h-full" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <path d="M 0 15 Q 20 5, 40 15 T 80 10 T 100 20" fill="none" stroke={isActive ? "#38bdf8" : "#334155"} strokeWidth="1.5" />
+            {isActive && <circle cx="80" cy="10" r="2" fill="#fff" filter="drop-shadow(0 0 4px #fff)" />}
           </svg>
-        </div>
-        <span className="text-[10px] text-sky-400/80 uppercase tracking-widest font-mono">Scale</span>
-      </motion.div>
+        )}
+        {index === 1 && (
+          <div className="flex gap-2">
+            <div className={`w-4 h-4 rounded-sm border ${isActive ? 'border-sky-400 bg-sky-900/30' : 'border-slate-700'}`} />
+            <div className={`w-4 h-4 rounded-sm border ${isActive ? 'border-sky-400 bg-sky-900/30' : 'border-slate-700'}`} />
+            <div className={`w-4 h-4 rounded-sm border ${isActive ? 'border-sky-400 bg-sky-900/30' : 'border-slate-700'}`} />
+          </div>
+        )}
+        {index === 2 && (
+          <div className="flex items-end gap-1.5 h-full pt-2">
+            <div className={`w-2 h-[40%] rounded-t-sm ${isActive ? 'bg-sky-400' : 'bg-slate-700'}`} />
+            <div className={`w-2 h-[70%] rounded-t-sm ${isActive ? 'bg-sky-400' : 'bg-slate-700'}`} />
+            <div className={`w-2 h-[50%] rounded-t-sm ${isActive ? 'bg-sky-400' : 'bg-slate-700'}`} />
+            <div className={`w-2 h-[90%] rounded-t-sm ${isActive ? 'bg-sky-400' : 'bg-slate-700'}`} />
+          </div>
+        )}
+        {index === 3 && (
+          <svg className="w-full h-full" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <path d="M 0 25 Q 40 25, 60 15 T 100 5" fill="none" stroke={isActive ? "#38bdf8" : "#334155"} strokeWidth="2" className={isActive ? "drop-shadow-[0_0_6px_#38bdf8]" : ""} />
+            {isActive && <path d="M 95 0 L 100 5 L 90 5 Z" fill="#38bdf8" />}
+          </svg>
+        )}
+      </div>
     </div>
   );
 };
 
 // ============================================================
-// INDIVIDUAL TEXT STEP
+// LEFT TEXT STEP
 // ============================================================
 
 const ProcessStep = ({ step, index }: { step: any; index: number }) => {
   const ref = useRef<HTMLDivElement>(null);
   
-  // Track this specific element's progress through the viewport
-  // Center of viewport activates it
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start 60%", "end 40%"]
@@ -196,7 +154,7 @@ const ProcessStep = ({ step, index }: { step: any; index: number }) => {
   return (
     <motion.div 
       ref={ref}
-      className="flex flex-col gap-4 min-h-[50vh] sm:min-h-[70vh] justify-center"
+      className="flex flex-col gap-4 min-h-[50vh] sm:min-h-[70vh] justify-center max-w-md"
       style={{ opacity }}
     >
       <motion.div 
@@ -211,12 +169,177 @@ const ProcessStep = ({ step, index }: { step: any; index: number }) => {
       >
         {step.title}
       </motion.h3>
-      <p className="text-base sm:text-lg text-slate-400 max-w-md leading-relaxed font-light">
+      <p className="text-base sm:text-lg text-slate-400 leading-relaxed font-light mb-4">
         {step.description}
       </p>
+      
+      {/* Technical Metadata Block */}
+      <div className="flex flex-col gap-2 border-t border-sky-900/30 pt-4 mt-2">
+        {STEP_METADATA[index].map((meta, i) => (
+          <span key={i} className="text-[10px] font-mono tracking-widest text-sky-200/50 uppercase">
+            {meta}
+          </span>
+        ))}
+      </div>
     </motion.div>
   );
 };
+
+// ============================================================
+// CENTRAL ENERGY SPINE & STICKY MACHINE
+// ============================================================
+
+const CentralMachine = ({ progress }: { progress: MotionValue<number> }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const smoothProgress = useSpring(progress, { stiffness: 100, damping: 20 });
+
+  // Map progress to active indices (0, 1, 2, 3)
+  const activeIndex = useTransform(smoothProgress, [0, 0.25, 0.5, 0.75, 1], [0, 1, 2, 3, 3]);
+  const activeStep = Math.min(3, Math.max(0, Math.round(activeIndex.get()))); // React state equivalent via motion is tricky, we'll use raw transforms for styles
+
+  // The traveling energy particle on the spine
+  const particleY = useTransform(smoothProgress, [0, 1], ["15%", "90%"]);
+  const spineGlowOpacity = useTransform(smoothProgress, [0, 0.1, 0.9, 1], [0, 1, 1, 0]);
+
+  // Sub-progress for each node (0 to 1)
+  const p1 = useTransform(smoothProgress, [0, 0.25], [0, 1]);
+  const p2 = useTransform(smoothProgress, [0.25, 0.5], [0, 1]);
+  const p3 = useTransform(smoothProgress, [0.5, 0.75], [0, 1]);
+  const p4 = useTransform(smoothProgress, [0.75, 1], [0, 1]);
+
+  return (
+    <div className="relative w-full h-[800px] max-h-screen flex items-center justify-center">
+      
+      {/* CENTER LINE BASE */}
+      <div className="absolute left-1/2 top-[10%] bottom-[10%] w-[1px] bg-sky-900/30 -translate-x-1/2" />
+      
+      {/* ENERGY PARTICLE & GLOW */}
+      <motion.div 
+        className="absolute left-1/2 w-[1px] h-32 bg-gradient-to-b from-transparent via-sky-400 to-transparent -translate-x-1/2 -translate-y-1/2 shadow-[0_0_15px_#38bdf8]"
+        style={{ top: particleY, opacity: prefersReducedMotion ? 0 : spineGlowOpacity }}
+      />
+      <motion.div 
+        className="absolute left-1/2 w-1.5 h-3 bg-sky-300 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_#fff]"
+        style={{ top: particleY, opacity: prefersReducedMotion ? 0 : spineGlowOpacity }}
+      />
+
+      {/* HORIZONTAL CONNECTORS & MAJOR NODES */}
+      {NODE_POSITIONS.map((pos, i) => {
+        // We use a custom hook-like approach with useTransform inside the component body 
+        // to determine if this specific node is "active" based on smoothProgress.
+        // For simplicity in a loop, we'll just render them and use framer-motion styles mapped to smoothProgress.
+        
+        // Active threshold: e.g. Node 0 is active around 0-0.25, Node 1 around 0.25-0.5
+        const thresholdStart = Math.max(0, (i * 0.25) - 0.1);
+        const thresholdEnd = Math.min(1, (i * 0.25) + 0.3);
+        const nodeOpacity = useTransform(smoothProgress, [thresholdStart, thresholdStart + 0.1, thresholdEnd - 0.1, thresholdEnd], [0.3, 1, 1, 0.3]);
+        
+        return (
+          <div key={`node-${i}`} className="absolute w-full flex items-center justify-center" style={{ top: pos, transform: "translateY(-50%)" }}>
+            
+            {/* Left Horizontal Connector (pointing to text) */}
+            <motion.div 
+              className="absolute right-1/2 w-24 h-[1px] origin-right"
+              style={{ 
+                background: "linear-gradient(to right, transparent, rgba(56,189,248,0.5))",
+                opacity: nodeOpacity 
+              }} 
+            />
+
+            {/* Right Horizontal Connector (pointing to readout panel) */}
+            <motion.div 
+              className="absolute left-1/2 w-24 h-[1px] origin-left"
+              style={{ 
+                background: "linear-gradient(to left, transparent, rgba(56,189,248,0.5))",
+                opacity: nodeOpacity 
+              }} 
+            />
+
+            {/* The Central Node wrapper */}
+            <motion.div className="bg-[#01040a] rounded-full z-10" style={{ opacity: useTransform(smoothProgress, [0,1], [1,1]) }}> 
+              {/* Force re-render of active state for SVGs using a trick or just pass progress, 
+                  but since we can't easily extract boolean from MotionValue in render without state,
+                  we will just use a wrapper component that subscribes to it. */}
+              <ActiveStateWrapper progress={smoothProgress} index={i} reducedMotion={prefersReducedMotion} />
+            </motion.div>
+
+            {/* Right Readout Panel */}
+            <motion.div className="absolute left-[calc(50%+4rem)]" style={{ opacity: nodeOpacity }}>
+              <ActiveReadoutWrapper progress={smoothProgress} index={i} />
+            </motion.div>
+          </div>
+        );
+      })}
+
+      {/* MICRO NODES (The Empty Space) */}
+      {MICRO_NODES.map((micro, i) => (
+        <div key={`micro-${i}`} className="absolute w-full flex flex-col items-center justify-center gap-2" style={{ top: micro.top, transform: "translateY(-50%)" }}>
+          <div className="w-4 h-4 border border-sky-900/50 rounded-sm rotate-45 flex items-center justify-center bg-[#01040a]">
+            <div className="w-1 h-1 bg-sky-700 rounded-sm" />
+          </div>
+          <div className="absolute left-[calc(50%+1.5rem)] flex flex-col gap-1">
+            {micro.labels.map((label, j) => (
+              <div key={j} className="flex items-center gap-2">
+                <div className="w-2 h-[1px] bg-sky-800" />
+                <span className="text-[8px] font-mono text-sky-600/60 tracking-widest">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {/* CINEMATIC BOTTOM TRANSITION */}
+      <motion.div 
+        className="absolute w-full flex flex-col items-center justify-center"
+        style={{ 
+          top: "100%", 
+          opacity: useTransform(smoothProgress, [0.8, 1], [0, 1]) 
+        }}
+      >
+        <div className="w-[1px] h-16 bg-gradient-to-b from-sky-500/50 to-transparent" />
+        <div className="absolute top-16 w-full max-w-xs h-32 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-500/20 via-[#01040a]/0 to-[#01040a]/0 rounded-full blur-xl pointer-events-none" />
+        <span className="mt-8 text-[10px] font-mono tracking-[0.3em] text-sky-400/80 uppercase">
+          A System For What&apos;s Next
+        </span>
+      </motion.div>
+
+    </div>
+  );
+};
+
+// Wrappers to convert MotionValue to boolean active states for the complex SVG components
+import { useState, useEffect } from "react";
+
+const ActiveStateWrapper = ({ progress, index, reducedMotion }: { progress: MotionValue<number>, index: number, reducedMotion: boolean }) => {
+  const [isActive, setIsActive] = useState(false);
+  
+  useEffect(() => {
+    return progress.on("change", (v) => {
+      const active = (v >= Math.max(0, index * 0.25 - 0.1) && v <= Math.min(1, index * 0.25 + 0.3));
+      setIsActive(active);
+    });
+  }, [progress, index]);
+
+  if (index === 0) return <Node1Discover isActive={isActive} reducedMotion={reducedMotion} />;
+  if (index === 1) return <Node2Build isActive={isActive} reducedMotion={reducedMotion} />;
+  if (index === 2) return <Node3Launch isActive={isActive} />;
+  if (index === 3) return <Node4Scale isActive={isActive} />;
+  return null;
+};
+
+const ActiveReadoutWrapper = ({ progress, index }: { progress: MotionValue<number>, index: number }) => {
+  const [isActive, setIsActive] = useState(false);
+  
+  useEffect(() => {
+    return progress.on("change", (v) => {
+      const active = (v >= Math.max(0, index * 0.25 - 0.1) && v <= Math.min(1, index * 0.25 + 0.3));
+      setIsActive(active);
+    });
+  }, [progress, index]);
+
+  return <ReadoutPanel index={index} isActive={isActive} />;
+};
+
 
 // ============================================================
 // MAIN SECTION
@@ -231,18 +354,22 @@ export function Process() {
 
   return (
     <section 
-      id="system" 
+      id="process" 
       ref={containerRef} 
       className="relative bg-[#01040a] text-white"
     >
+      {/* Background Atmosphere - Technical Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] pointer-events-none" />
+      <div className="absolute left-1/4 right-1/4 top-0 bottom-0 border-x border-sky-900/10 pointer-events-none" />
+
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* DESKTOP SPLIT LAYOUT */}
-        <div className="hidden lg:grid grid-cols-2 gap-12 xl:gap-24">
+        <div className="hidden lg:grid grid-cols-2 gap-12">
           
           {/* Left Column: Scrollable Content */}
-          <div className="pt-32 pb-64 pr-8">
+          <div className="pt-32 pb-96 pr-8">
             {/* Header */}
             <div className="mb-32">
               <span className="text-sky-400/80 uppercase tracking-widest text-xs font-mono mb-4 block">
@@ -264,26 +391,15 @@ export function Process() {
             </div>
           </div>
 
-          {/* Right Column: Sticky Visualization */}
+          {/* Right Column: Sticky Machine Assembly */}
           <div className="relative">
-            <div className="sticky top-0 h-screen flex flex-col items-center justify-center border-l border-white/[0.03]">
-              
-              {/* Optional: Tiny Metadata on the right edge */}
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-12 items-end pr-4 text-[9px] font-mono tracking-[0.2em] text-slate-600 hidden xl:flex">
-                <span>STRATEGY</span>
-                <span>CREATIVE</span>
-                <span>EXECUTION</span>
-                <span className="text-sky-500/50">COMPOUND GROWTH</span>
-              </div>
-
-              <MachineVisual progress={scrollYProgress} />
-              
+            <div className="sticky top-0 h-screen flex items-center justify-center">
+              <CentralMachine progress={scrollYProgress} />
             </div>
           </div>
         </div>
 
         {/* MOBILE / TABLET LAYOUT (<1024px) */}
-        {/* We stack text and simplified visual components naturally so nothing overlaps */}
         <div className="lg:hidden py-24 flex flex-col gap-24">
           {/* Mobile Header */}
           <div>
@@ -300,46 +416,58 @@ export function Process() {
 
           {/* Mobile Steps */}
           <div className="flex flex-col gap-32 relative">
-            {/* Faint connecting line behind mobile steps */}
+            {/* Central Spine for Mobile */}
             <div className="absolute left-6 top-10 bottom-10 w-[1px] bg-sky-900/30 z-0" />
             
             {PROCESS_SECTION.steps.map((step, index) => (
               <div key={step.number} className="relative z-10 flex flex-col gap-8">
-                {/* Text Block */}
-                <div className="flex flex-col gap-3 bg-[#01040a]/80 backdrop-blur-sm pr-4">
-                  <div className="text-sky-400 font-mono tracking-widest text-sm">{step.number}</div>
-                  <h3 className="text-3xl font-light text-white">{step.title}</h3>
-                  <p className="text-slate-400 text-base font-light">{step.description}</p>
+                {/* Node & Text Wrapper */}
+                <div className="flex gap-6">
+                  <div className="bg-[#01040a] rounded-full py-2 z-10 scale-75 origin-top-left">
+                    {index === 0 && <Node1Discover isActive={true} reducedMotion={true} />}
+                    {index === 1 && <Node2Build isActive={true} reducedMotion={true} />}
+                    {index === 2 && <Node3Launch isActive={true} />}
+                    {index === 3 && <Node4Scale isActive={true} />}
+                  </div>
+                  
+                  {/* Text Block */}
+                  <div className="flex flex-col gap-3 bg-[#01040a]/80 backdrop-blur-sm pr-4 pt-2">
+                    <div className="text-sky-400 font-mono tracking-widest text-sm">{step.number}</div>
+                    <h3 className="text-3xl font-light text-white">{step.title}</h3>
+                    <p className="text-slate-400 text-base font-light">{step.description}</p>
+                    
+                    {/* Metadata */}
+                    <div className="flex flex-col gap-1 border-t border-sky-900/30 pt-4 mt-2">
+                      {STEP_METADATA[index].map((meta, i) => (
+                        <span key={i} className="text-[9px] font-mono tracking-widest text-sky-200/50 uppercase">
+                          {meta}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 
-                {/* Simplified Visual for Mobile (static or very subtle pulse) */}
-                <div className="ml-4 pl-8 border-l border-sky-500/20 py-4">
-                  {index === 0 && (
-                    <div className="w-12 h-12 border border-sky-400/40 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-sky-300 rounded-full shadow-[0_0_8px_#38bdf8]" />
-                    </div>
-                  )}
-                  {index === 1 && (
-                    <div className="flex gap-2">
-                      <div className="w-6 h-6 border border-sky-400/50 bg-[#081e3d] rounded-sm" />
-                      <div className="w-8 h-6 border border-sky-300 bg-[#0a254d] rounded-sm shadow-[0_0_8px_#38bdf8]" />
-                    </div>
-                  )}
-                  {index === 2 && (
-                    <div className="flex items-end gap-1 h-8">
-                      <div className="w-2 h-4 bg-sky-400/50" />
-                      <div className="w-2 h-8 bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
-                      <div className="w-2 h-6 bg-sky-400/50" />
-                    </div>
-                  )}
-                  {index === 3 && (
-                    <svg className="w-20 h-10" viewBox="0 0 100 50">
-                      <path d="M 0 40 Q 40 40, 60 20 T 100 0" fill="none" stroke="#38bdf8" strokeWidth="2" className="drop-shadow-[0_0_6px_#38bdf8]" />
-                    </svg>
-                  )}
-                </div>
+                {/* Micro Nodes (Mobile) */}
+                {index < 3 && (
+                  <div className="flex flex-col items-start ml-4 pl-4 gap-2 border-l border-sky-900/30 py-4">
+                    {MICRO_NODES[index].labels.map((label, j) => (
+                      <div key={j} className="flex items-center gap-2">
+                        <div className="w-2 h-[1px] bg-sky-800" />
+                        <span className="text-[8px] font-mono text-sky-600/60 tracking-widest">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
+            
+            {/* Cinematic Bottom Transition Mobile */}
+            <div className="relative z-10 flex flex-col items-center justify-center mt-12">
+               <div className="w-[1px] h-16 bg-gradient-to-b from-sky-500/50 to-transparent" />
+               <span className="mt-8 text-[10px] font-mono tracking-[0.3em] text-sky-400/80 uppercase">
+                 A System For What&apos;s Next
+               </span>
+            </div>
           </div>
         </div>
         
