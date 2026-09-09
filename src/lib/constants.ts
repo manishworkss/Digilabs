@@ -54,6 +54,7 @@ export const SYSTEM_SECTION = {
       description:
         "Data-driven media planning that aligns spend with revenue goals across every channel.",
       icon: "Crosshair" as const,
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
     },
     {
       number: "02",
@@ -61,6 +62,7 @@ export const SYSTEM_SECTION = {
       description:
         "Performance creative frameworks designed to scale, iterate, and convert.",
       icon: "Layers" as const,
+      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
     },
     {
       number: "03",
@@ -68,6 +70,7 @@ export const SYSTEM_SECTION = {
       description:
         "Continuous measurement and refinement from first click to closed deal.",
       icon: "BarChart3" as const,
+      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop",
     },
   ],
 } as const;

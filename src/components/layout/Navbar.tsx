@@ -46,8 +46,8 @@ export function Navbar() {
         "fixed top-0 left-0 right-0 z-50",
         "transition-all duration-500",
         scrolled
-          ? "bg-nova-black/80 backdrop-blur-xl border-b border-nova-border"
-          : "bg-transparent border-b border-transparent"
+          ? "bg-nova-black/80 backdrop-blur-xl"
+          : "bg-transparent"
       )}
     >
       <nav

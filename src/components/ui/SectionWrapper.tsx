@@ -26,13 +26,17 @@ export function SectionWrapper({
     <section
       id={id}
       className={cn(
-        "relative w-full",
-        padded && "py-20 md:py-24 lg:py-30",
+        "relative w-full mx-auto max-w-[1400px] px-4 sm:px-6 my-4",
         className
       )}
     >
-      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-8">
+      <div className={cn(
+        "w-full rounded-[var(--radius-card)] bg-nova-surface border border-nova-border overflow-hidden",
+        padded && "py-20 md:py-24 lg:py-30"
+      )}>
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-8">
         {children}
+        </div>
       </div>
     </section>
   );

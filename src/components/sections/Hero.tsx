@@ -33,8 +33,8 @@ const fadeUpVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.8,
-      ease: [0.25, 0.1, 0.25, 1],
+      duration: 1.2,
+      ease: [0.4, 0, 0.2, 1],
     },
   },
 };
@@ -70,14 +70,14 @@ export function Hero() {
 
       {/* Content */}
       <motion.div
-        className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 w-full pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32"
+        className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 w-full pt-32 pb-16 md:pt-40 md:pb-24 lg:pt-48 lg:pb-32 flex flex-col items-center text-center"
         variants={container}
         initial="hidden"
         animate="visible"
       >
         {/* Eyebrow */}
         <motion.p
-          className="text-sm md:text-base text-nova-gray uppercase tracking-[0.2em] mb-6 md:mb-8"
+          className="text-sm md:text-base text-nova-gray uppercase tracking-[0.2em] mb-6 md:mb-8 font-semibold"
           variants={variants}
         >
           Performance Marketing
@@ -85,15 +85,43 @@ export function Hero() {
 
         {/* Headline */}
         <motion.h1
-          className="text-[2.5rem] leading-[1.08] sm:text-5xl md:text-6xl lg:text-[5rem] lg:leading-[1.05] font-bold tracking-tight text-nova-white max-w-4xl"
-          variants={variants}
+          className="text-[3.5rem] leading-[1.05] sm:text-6xl md:text-7xl lg:text-[6.5rem] lg:leading-[1.02] font-bold tracking-[var(--tracking-tight)] text-nova-white max-w-5xl"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
         >
-          {HERO.headline}
+          {HERO.headline.split(" ").map((word, i, arr) => (
+            <motion.span
+              key={i}
+              className="inline-block"
+              style={{ marginRight: i === arr.length - 1 ? 0 : "0.25em" }}
+              variants={{
+                hidden: { opacity: 0, y: 50, filter: "blur(10px)" },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                  transition: {
+                    duration: 1.4,
+                    ease: [0.4, 0, 0.2, 1],
+                  },
+                },
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
         </motion.h1>
 
         {/* Subheadline */}
         <motion.p
-          className="mt-6 md:mt-8 text-lg md:text-xl text-nova-gray leading-relaxed max-w-xl"
+          className="mt-6 md:mt-8 text-xl md:text-2xl text-nova-gray leading-relaxed max-w-2xl font-medium tracking-[var(--tracking-normal)]"
           variants={variants}
         >
           {HERO.subheadline}
@@ -101,13 +129,13 @@ export function Hero() {
 
         {/* CTAs */}
         <motion.div
-          className="mt-10 md:mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+          className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center gap-4"
           variants={variants}
         >
-          <Button href="#contact" size="lg">
+          <Button href="#contact" size="lg" className="rounded-full px-8">
             {HERO.primaryCTA}
           </Button>
-          <Button href={HERO.secondaryCTAHref} variant="secondary" size="lg">
+          <Button href={HERO.secondaryCTAHref} variant="secondary" size="lg" className="rounded-full px-8 bg-nova-white/10 text-nova-white hover:bg-nova-white/20 border-none">
             {HERO.secondaryCTA}
           </Button>
         </motion.div>
