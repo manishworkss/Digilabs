@@ -17,6 +17,7 @@ export function Statement() {
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [activeHover, setActiveHover] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -114,6 +115,49 @@ export function Statement() {
 
       <div className="max-w-[1440px] w-full mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row gap-16 lg:gap-8">
         
+        {/* SVG Connector Lines (Card -> Stage) */}
+        {!isMobile && (
+          <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block">
+            <svg className="w-full h-full" viewBox="0 0 1000 800" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGrad0" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(56,189,248,0)" />
+                  <stop offset="50%" stopColor="rgba(56,189,248,1)" />
+                  <stop offset="100%" stopColor="rgba(56,189,248,0)" />
+                </linearGradient>
+                <linearGradient id="lineGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(56,189,248,0)" />
+                  <stop offset="50%" stopColor="rgba(56,189,248,1)" />
+                  <stop offset="100%" stopColor="rgba(124,58,237,0)" />
+                </linearGradient>
+                <linearGradient id="lineGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(124,58,237,0)" />
+                  <stop offset="50%" stopColor="rgba(168,85,247,1)" />
+                  <stop offset="100%" stopColor="rgba(168,85,247,0)" />
+                </linearGradient>
+              </defs>
+              
+              {/* Higher Ad Spend -> Traffic */}
+              <g className={`transition-opacity duration-700 ${activeHover === 0 ? "opacity-100" : "opacity-0"}`}>
+                <path d="M 350,400 C 400,400 450,350 500,350" fill="none" stroke="rgba(56,189,248,0.2)" strokeWidth="1" />
+                <path d="M 350,400 C 400,400 450,350 500,350" fill="none" stroke="url(#lineGrad0)" strokeWidth="1.5" strokeDasharray="100 800" className={prefersReduced ? "" : "animate-[dash-flow_3s_linear_infinite]"} />
+              </g>
+
+              {/* More Traffic -> Attention */}
+              <g className={`transition-opacity duration-700 ${activeHover === 1 ? "opacity-100" : "opacity-0"}`}>
+                <path d="M 350,500 C 450,500 550,450 700,450" fill="none" stroke="rgba(56,189,248,0.2)" strokeWidth="1" />
+                <path d="M 350,500 C 450,500 550,450 700,450" fill="none" stroke="url(#lineGrad1)" strokeWidth="1.5" strokeDasharray="100 800" className={prefersReduced ? "" : "animate-[dash-flow_3s_linear_infinite]"} />
+              </g>
+
+              {/* Lower Growth -> Revenue */}
+              <g className={`transition-opacity duration-700 ${activeHover === 2 ? "opacity-100" : "opacity-0"}`}>
+                <path d="M 350,600 C 450,600 700,550 900,550" fill="none" stroke="rgba(124,58,237,0.2)" strokeWidth="1" />
+                <path d="M 350,600 C 450,600 700,550 900,550" fill="none" stroke="url(#lineGrad2)" strokeWidth="1.5" strokeDasharray="100 800" className={prefersReduced ? "" : "animate-[dash-flow_3s_linear_infinite]"} />
+              </g>
+            </svg>
+          </div>
+        )}
+
         {/* LEFT SIDE: Copy & Insights (40%) */}
         <div className="w-full lg:w-[40%] flex flex-col justify-center gap-8">
           <motion.div
@@ -158,13 +202,20 @@ export function Statement() {
                 viewport={{ once: true, margin: "-20%" }}
                 variants={insightVariants}
                 custom={idx}
-                className="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm relative overflow-hidden group w-full max-w-md"
+                onMouseEnter={() => setActiveHover(idx)}
+                onMouseLeave={() => setActiveHover(null)}
+                className={`flex items-center gap-4 p-4 rounded-xl border bg-white/[0.02] backdrop-blur-sm relative overflow-hidden group w-full max-w-md transition-all duration-500 cursor-default
+                  ${activeHover === idx ? "border-blue-400/40 shadow-[0_0_20px_rgba(56,189,248,0.1)]" : "border-white/5"}
+                  ${activeHover !== null && activeHover !== idx ? "opacity-50" : "opacity-100"}
+                `}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-900/20 border border-blue-400/20 text-blue-400">
+                <div className={`absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent transition-opacity duration-500 ${activeHover === idx ? "opacity-100" : "opacity-0"}`} />
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-500 z-10
+                  ${activeHover === idx ? "bg-blue-900/40 border-blue-400/60 text-blue-300 shadow-[0_0_15px_rgba(56,189,248,0.5)]" : "bg-blue-900/20 border-blue-400/20 text-blue-400"}
+                `}>
                   <insight.icon className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="z-10">
                   <h4 className="text-sm font-medium text-nova-white">{insight.label}</h4>
                   <p className="text-xs text-nova-gray mt-1">{insight.sub}</p>
                 </div>
@@ -214,12 +265,31 @@ export function Statement() {
                   </filter>
                 </defs>
                 <g filter="url(#streamGlow)">
-                  {/* Chaos -> Focus -> Converge */}
-                  <path d="M 0,100 C 300,150 600,350 900,350" fill="none" stroke="url(#streamDesktop)" strokeWidth="1" className={prefersReduced ? "" : "animate-[dash-flow_10s_linear_infinite]"} strokeDasharray="500 1000" />
-                  <path d="M 0,200 C 300,250 600,350 900,350" fill="none" stroke="rgba(147,197,253,0.4)" strokeWidth="0.5" className={prefersReduced ? "" : "animate-[dash-flow_12s_linear_infinite]"} strokeDasharray="600 800" />
-                  <path d="M 0,350 C 300,350 600,350 900,350" fill="none" stroke="url(#streamDesktop)" strokeWidth="2" className={prefersReduced ? "" : "animate-[dash-flow_8s_linear_infinite]"} strokeDasharray="400 600" />
-                  <path d="M 0,500 C 300,450 600,350 900,350" fill="none" stroke="rgba(147,197,253,0.4)" strokeWidth="0.5" className={prefersReduced ? "" : "animate-[dash-flow_11s_linear_infinite]"} strokeDasharray="450 900" />
-                  <path d="M 0,600 C 300,550 600,350 900,350" fill="none" stroke="url(#streamDesktop)" strokeWidth="1" className={prefersReduced ? "" : "animate-[dash-flow_9s_linear_infinite]"} strokeDasharray="550 1200" />
+                  {/* Clean Signal Path: Traffic -> Attention -> Revenue */}
+                  {/* Base path (faint) */}
+                  <path d="M 0,350 L 300,350 C 400,350 450,450 500,450 L 700,450 C 800,450 850,550 900,550 L 1000,550" fill="none" stroke="rgba(56,189,248,0.2)" strokeWidth="1" />
+                  
+                  {/* Animated Traveling Signal */}
+                  <path d="M 0,350 L 300,350 C 400,350 450,450 500,450 L 700,450 C 800,450 850,550 900,550 L 1000,550" fill="none" stroke="url(#streamDesktop)" strokeWidth="2" className={prefersReduced ? "" : "animate-[dash-flow_6s_linear_infinite]"} strokeDasharray="150 1200" />
+                  
+                  {/* Micro Nodes Traffic ↔ Attention */}
+                  <g transform="translate(425, 400)">
+                    <circle cx="-20" cy="-10" r="1.5" fill="rgba(56,189,248,0.6)" />
+                    <rect x="-3" y="-3" width="6" height="6" fill="none" stroke="rgba(56,189,248,0.8)" strokeWidth="1" transform="rotate(45)" />
+                    <circle cx="20" cy="10" r="1.5" fill="rgba(56,189,248,0.6)" />
+                  </g>
+
+                  {/* Micro Nodes Attention ↔ Revenue */}
+                  <g transform="translate(825, 500)">
+                    <circle cx="-20" cy="-10" r="1.5" fill="rgba(124,58,237,0.6)" />
+                    <rect x="-3" y="-3" width="6" height="6" fill="none" stroke="rgba(124,58,237,0.8)" strokeWidth="1" transform="rotate(45)" />
+                    <circle cx="20" cy="10" r="1.5" fill="rgba(124,58,237,0.6)" />
+                  </g>
+
+                  {/* Sparse background horizontal lines for technical atmosphere */}
+                  <path d="M 0,250 L 1000,250" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="4 8" />
+                  <path d="M 0,450 L 1000,450" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="4 8" />
+                  <path d="M 0,650 L 1000,650" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="4 8" />
                 </g>
               </svg>
             </motion.div>
@@ -242,37 +312,112 @@ export function Statement() {
                   </linearGradient>
                 </defs>
                 <g filter="url(#streamGlow)">
-                  <path d="M 50,0 C 150,200 200,400 200,700" fill="none" stroke="url(#streamMobile)" strokeWidth="1" className={prefersReduced ? "" : "animate-[dash-flow_10s_linear_infinite]"} strokeDasharray="300 800" />
-                  <path d="M 200,0 C 200,200 200,400 200,700" fill="none" stroke="url(#streamMobile)" strokeWidth="2" className={prefersReduced ? "" : "animate-[dash-flow_8s_linear_infinite]"} strokeDasharray="400 600" />
-                  <path d="M 350,0 C 250,200 200,400 200,700" fill="none" stroke="url(#streamMobile)" strokeWidth="1" className={prefersReduced ? "" : "animate-[dash-flow_9s_linear_infinite]"} strokeDasharray="350 900" />
+                  <path d="M 200,0 L 200,800" fill="none" stroke="rgba(56,189,248,0.15)" strokeWidth="1" />
+                  <path d="M 200,0 L 200,800" fill="none" stroke="url(#streamMobile)" strokeWidth="2" className={prefersReduced ? "" : "animate-[dash-flow_6s_linear_infinite]"} strokeDasharray="150 800" />
                 </g>
               </svg>
             </motion.div>
 
             {/* The 3 Glass Panels (Gates) */}
             <div className="absolute inset-0 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-10 pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
-              {['TRAFFIC', 'ATTENTION', 'REVENUE'].map((label, idx) => (
-                <motion.div 
-                  key={label}
-                  className="relative group flex items-center justify-center w-[200px] h-[60px] lg:w-[130px] lg:h-[450px] rounded-2xl border border-blue-400/20 bg-[#020205]/40 backdrop-blur-md shadow-[0_0_30px_rgba(29,78,216,0.15)] overflow-hidden transition-all duration-500 hover:border-blue-400/40 hover:bg-[#020205]/20 hover:shadow-[0_0_40px_rgba(56,189,248,0.25)]"
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-20%" }}
-                  variants={panelVariants}
-                  custom={idx}
-                  style={{
-                    transformStyle: "preserve-3d",
-                    rotateY: isMobile ? 0 : 35,
-                    x: isMobile ? 0 : idx * -20, // Pull them closer together horizontally
-                    z: prefersReduced || isMobile ? 0 : -idx * 150, // Massive depth to make them shrink in the distance
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-b from-blue-400/0 to-transparent group-hover:from-blue-400/10 transition-colors duration-500" />
-                  <span className="text-[10px] tracking-[0.3em] font-bold text-blue-200/80 uppercase group-hover:text-blue-100 transition-colors duration-500 -translate-y-32 lg:-translate-y-48">
-                    {label}
-                  </span>
-                </motion.div>
-              ))}
+              {['TRAFFIC', 'ATTENTION', 'REVENUE'].map((label, idx) => {
+                const isActive = activeHover === idx;
+                const baseGlow = idx === 0 ? "rgba(29,78,216,0.1)" : idx === 1 ? "rgba(56,189,248,0.15)" : "rgba(124,58,237,0.2)";
+                const activeGlow = idx === 0 ? "rgba(56,189,248,0.3)" : idx === 1 ? "rgba(56,189,248,0.4)" : "rgba(124,58,237,0.5)";
+                
+                return (
+                  <motion.div 
+                    key={label}
+                    className={`relative group flex flex-col items-center justify-center w-[200px] h-[60px] lg:w-[130px] lg:h-[450px] rounded-2xl border bg-[#020205]/40 backdrop-blur-md overflow-hidden transition-all duration-700
+                      ${isActive ? "border-blue-400/50" : "border-blue-400/20"}
+                    `}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-20%" }}
+                    variants={panelVariants}
+                    custom={idx}
+                    style={{
+                      transformStyle: "preserve-3d",
+                      rotateY: isMobile ? 0 : 35,
+                      x: isMobile ? 0 : idx * -20,
+                      z: prefersReduced || isMobile ? 0 : -idx * 150,
+                      boxShadow: `0 0 ${isActive ? '40px' : '20px'} ${isActive ? activeGlow : baseGlow}`
+                    }}
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-b transition-opacity duration-700
+                      ${idx === 0 ? "from-blue-500/15" : idx === 1 ? "from-sky-400/15" : "from-purple-500/20"}
+                      ${isActive ? "opacity-100 to-transparent" : "opacity-0 to-transparent"}
+                    `} />
+                    
+                    {/* Internal System Activity */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
+                      
+                      {/* Traffic (INPUT) */}
+                      {idx === 0 && (
+                        <div className={`flex flex-col items-center transition-all duration-700 ${isActive ? "opacity-100" : "opacity-40"}`}>
+                          <svg width="40" height="20" viewBox="0 0 40 20" fill="none" className="mb-2">
+                            <path d="M0,10 C10,10 15,0 20,10 C25,20 30,10 40,10" stroke="rgba(56,189,248,0.6)" strokeWidth="1" className={prefersReduced ? "" : "animate-[dash-flow_3s_linear_infinite]"} strokeDasharray="10 20" />
+                          </svg>
+                          <span className="text-[7px] tracking-[0.2em] text-blue-400/80">DATA IN</span>
+                          {/* 3 tiny dots */}
+                          {!prefersReduced && [...Array(3)].map((_, i) => (
+                            <motion.div key={i} className="absolute w-0.5 h-0.5 bg-blue-300 rounded-full"
+                              initial={{ y: -50, opacity: 0 }}
+                              animate={{ y: 50, opacity: [0, 1, 0] }}
+                              transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Attention (PROCESS) */}
+                      {idx === 1 && (
+                        <div className={`flex flex-col items-center transition-all duration-700 ${isActive ? "opacity-100" : "opacity-40"}`}>
+                          <div className="relative flex items-center justify-center mb-2">
+                            <div className="w-1 h-1 bg-sky-300 rounded-full shadow-[0_0_8px_rgba(56,189,248,1)]" />
+                            {!prefersReduced && (
+                              <motion.div className="absolute w-6 h-6 border border-sky-400/40 rounded-full"
+                                animate={{ scale: [1, 2], opacity: [0.8, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                              />
+                            )}
+                          </div>
+                          <span className="text-[7px] tracking-[0.2em] text-sky-400/80">SIGNAL</span>
+                        </div>
+                      )}
+
+                      {/* Revenue (OUTPUT) */}
+                      {idx === 2 && (
+                        <div className={`flex flex-col items-center transition-all duration-700 ${isActive ? "opacity-100" : "opacity-40"}`}>
+                          <svg width="40" height="30" viewBox="0 0 40 30" fill="none" className="mb-2">
+                            <path d="M0,30 L10,20 L20,25 L40,0" stroke="rgba(168,85,247,0.6)" strokeWidth="1" />
+                            <circle cx="40" cy="0" r="1.5" fill="rgba(168,85,247,1)" style={{ filter: "drop-shadow(0 0 5px rgba(168,85,247,1))" }} />
+                            {!prefersReduced && (
+                              <motion.path d="M0,30 L10,20 L20,25 L40,0" stroke="rgba(168,85,247,1)" strokeWidth="1.5" strokeDasharray="60"
+                                initial={{ strokeDashoffset: 60 }}
+                                animate={{ strokeDashoffset: 0 }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                              />
+                            )}
+                          </svg>
+                          <span className="text-[7px] tracking-[0.2em] text-purple-400/80">OUTPUT</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="z-10 flex flex-col items-center -translate-y-32 lg:-translate-y-48">
+                      <span className={`text-[10px] tracking-[0.3em] font-bold uppercase transition-colors duration-500
+                        ${isActive ? "text-white" : "text-blue-200/60"}
+                      `}>
+                        {label}
+                      </span>
+                      <span className="text-[8px] tracking-[0.2em] font-medium text-nova-gray mt-1 opacity-60">
+                        {idx === 0 ? "INPUT" : idx === 1 ? "PROCESS" : "OUTPUT"}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Sparse Particles following paths (Desktop Only) */}

@@ -39,7 +39,7 @@ export function FloatingCTA() {
           exit={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.95 }}
           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <Button href="#contact" size="default">
+          <Button href="#contact" size="default" className="rounded-full !bg-none !bg-[#7bc4e9] text-white hover:!brightness-110 shadow-lg">
             Book a Call
           </Button>
         </motion.div>

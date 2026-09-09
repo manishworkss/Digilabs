@@ -76,12 +76,16 @@ export function Hero() {
         animate="visible"
       >
         {/* Eyebrow */}
-        <motion.p
-          className="text-sm md:text-base text-nova-gray uppercase tracking-[0.2em] mb-6 md:mb-8 font-semibold"
+        <motion.div
+          className="flex items-center justify-center gap-3 text-sm md:text-base text-nova-gray uppercase tracking-[0.2em] mb-6 md:mb-8 font-semibold"
           variants={variants}
         >
+          <div className="relative flex h-2 w-2 items-center justify-center">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500"></span>
+          </div>
           Performance Marketing
-        </motion.p>
+        </motion.div>
 
         {/* Headline */}
         <motion.h1
