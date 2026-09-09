@@ -618,7 +618,7 @@ export function PerformanceSystem() {
 
   return (
     <div ref={containerRef} className="relative h-[300vh] bg-[#01040a]" id="system">
-      <div className="sticky top-0 h-screen w-full flex flex-col justify-between items-center overflow-hidden py-8 sm:py-10 px-4 sm:px-6 lg:px-8">
+      <div className="sticky top-0 h-screen w-full flex flex-col justify-between items-center overflow-hidden pt-8 sm:pt-10 pb-16 sm:pb-24 lg:pb-32 px-4 sm:px-6 lg:px-8">
         
         {/* ============================================================
             CINEMATIC ENVIRONMENT: EARTH HORIZON + LIGHT RAYS + STARS

@@ -24,7 +24,7 @@ export function Results() {
     <section
       ref={sectionRef}
       id="results"
-      className="relative w-full bg-[#01040a] py-24 sm:py-32 md:py-36 overflow-hidden border-t border-sky-400/10"
+      className="relative w-full bg-[#01040a] pt-32 sm:pt-40 md:pt-48 pb-24 sm:pb-32 md:pb-36 overflow-hidden border-t border-sky-400/10"
     >
       {/* ============================================================
           CINEMATIC ATMOSPHERE: LOCALIZED SKY-BLUE ISLANDS & FAINT GRID
