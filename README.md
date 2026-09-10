@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/readme/hero.png" alt="NOVA Hero Section" width="100%" />
+  <img src="docs/assets/hero.png" alt="NOVA Hero Section" width="100%" />
   
   # NOVA — Performance Marketing Landing Page
   
@@ -30,32 +30,32 @@ Every module is architected to guide the user seamlessly through the performance
 
 ### 1. The Hero
 An immersive cinematic entrance featuring a breathing CSS gradient orb, live status indicators, and an instantly clear value proposition.
-<img src="public/readme/hero.png" alt="Hero Section" width="100%" />
+<img src="docs/assets/hero.png" alt="Hero Section" width="100%" />
 
 ### 2. The Problem Statement
 A split-screen module highlighting common pain points on the left, paired with a glowing SVG pipeline visualization on the right.
-<img src="public/readme/statement.png" alt="Statement Section" width="100%" />
+<img src="docs/assets/statement.png" alt="Statement Section" width="100%" />
 
 ### 3. The Performance System
 A horizontal-scroll (or grid) breakdown of the strategy, creative, and optimization unified approach.
-<img src="public/readme/system.png" alt="System Section" width="100%" />
+<img src="docs/assets/system.png" alt="System Section" width="100%" />
 
 ### 4. Real Results
 Clean, high-contrast metric cards that command attention and provide social proof.
-<img src="public/readme/results.png" alt="Results Section" width="100%" />
+<img src="docs/assets/results.png" alt="Results Section" width="100%" />
 
 ### 5. The Process
 A sticky, dual-column scroll experience guiding the user through the 4 core steps (Discover, Build, Launch, Scale) alongside a custom scalable SVG machine assembly visualization.
-<img src="public/readme/process.png" alt="Process Section" width="100%" />
+<img src="docs/assets/process.png" alt="Process Section" width="100%" />
 
 ### 6. The Final CTA Dashboard
 A stunning 3D isometric dashboard showcasing mock performance metrics, hovering glass badges, and glowing SVGs to drive the final call to action.
-<img src="public/readme/final_cta.png" alt="Final CTA Section" width="100%" />
+<img src="docs/assets/final_cta.png" alt="Final CTA Section" width="100%" />
 
 ### 7. Lead Capture & Premium Footer
 A conversion-optimized lead capture form directly integrated with Google Sheets, grounded by a premium multi-column footer with a grid mask.
-<img src="public/readme/contact.png" alt="Contact Form" width="100%" />
-<img src="public/readme/footer.png" alt="Footer" width="100%" />
+<img src="docs/assets/contact.png" alt="Contact Form" width="100%" />
+<img src="docs/assets/footer.png" alt="Footer" width="100%" />
 
 ---
 
