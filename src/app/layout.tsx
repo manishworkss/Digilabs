@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Caveat } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
@@ -14,6 +14,12 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-caveat",
 });
 
 // ============================================================
@@ -48,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased`}>
+    <html lang="en" className={`${inter.variable} ${caveat.variable} antialiased`}>
       <head>
         {/* GTM Script — only loads if GTM_ID is configured */}
         {GTM_ID && (

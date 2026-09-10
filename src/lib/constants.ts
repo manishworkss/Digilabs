@@ -164,8 +164,34 @@ export const BUDGET_OPTIONS = [
 export const FOOTER = {
   copyright: `\u00A9 ${new Date().getFullYear()} NOVA. All rights reserved.`,
   disclaimer: "This is a fictional brand created for demonstration purposes.",
-  links: [
-    { label: "Privacy", href: "#" },
-    { label: "Terms", href: "#" },
+  columns: [
+    {
+      title: "Platform",
+      links: [
+        { label: "System", href: "#system" },
+        { label: "Results", href: "#results" },
+        { label: "Process", href: "#process" },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        { label: "About", href: "#" },
+        { label: "Careers", href: "#" },
+        { label: "Contact", href: "#contact" },
+      ],
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Privacy Policy", href: "#" },
+        { label: "Terms of Service", href: "#" },
+      ],
+    },
   ],
+  socials: [
+    { label: "Twitter", href: "#", icon: "Twitter" },
+    { label: "LinkedIn", href: "#", icon: "Linkedin" },
+    { label: "GitHub", href: "#", icon: "Github" },
+  ]
 } as const;

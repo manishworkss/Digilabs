@@ -1,106 +1,117 @@
-# NOVA Landing Page
-
-A premium, Apple-inspired, single-page performance marketing landing page built for "NOVA".
-
-## Technology Stack
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
-- **Animation**: Framer Motion
-- **Forms**: React Hook Form + Zod
-- **Icons**: Lucide React
-
-## Development Setup
-
-First, install dependencies:
-```bash
-npm install
-```
-
-Copy the `.env.example` to `.env.local`:
-```bash
-cp .env.example .env.local
-```
-
-Run the development server:
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
----
-
-## Lead Form Setup (Google Apps Script)
-
-The Lead Form is designed to write directly to a Google Sheet via a Google Apps Script Web App endpoint, avoiding the need for a dedicated backend.
-
-### 1. Create the Google Sheet
-1. Create a new Google Sheet where you want leads to be saved.
-2. (Optional) Name your columns in the first row: `Date`, `Name`, `Email`, `Company`, `Budget`.
-
-### 2. Create the Apps Script
-1. In your Google Sheet, click **Extensions > Apps Script**.
-2. Replace the default code with the following script:
-
-```javascript
-function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+<div align="center">
+  <img src="public/readme/hero.png" alt="NOVA Hero Section" width="100%" />
   
-  try {
-    var data = JSON.parse(e.postData.contents);
-    var rowData = [
-      new Date(),
-      data.name,
-      data.email,
-      data.company,
-      data.budget
-    ];
-    
-    // Write to the first empty row
-    sheet.appendRow(rowData);
-    
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-```
+  # NOVA — Performance Marketing Landing Page
+  
+  **A premium, high-conversion landing page engineered for modern performance marketing agencies.**
+  
+  [Live Demo](#) · [Report Bug](#) · [Request Feature](#)
+</div>
 
-### 3. Deploy the Web App
-1. Click the **Deploy** button (top right) -> **New deployment**.
-2. Click the gear icon next to "Select type" and choose **Web app**.
-3. Configure the settings exactly as follows:
-   - **Execute as**: `Me (your email)`
-   - **Who has access**: `Anyone` *(Crucial step, or it will require authentication)*
-4. Click **Deploy** and authorize the script when prompted.
-5. Copy the generated **Web app URL**.
+<br />
 
-### 4. Configure the Environment
-Add the URL you copied to your `.env.local` file:
-```env
-NEXT_PUBLIC_FORM_ENDPOINT=https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
-```
+## 🌟 Overview
 
-Your form will now securely transmit leads directly to your Google Sheet without exposing credentials!
+NOVA is a cutting-edge landing page template designed specifically for modern performance marketing, media buying, and growth agencies. Built with **Next.js 15**, **React 19**, and **Tailwind CSS v4**, it leverages advanced scroll-linked animations via **Framer Motion** and custom 3D CSS transforms to create a premium "dashboard" aesthetic.
+
+**Key Features:**
+- 🌓 **Dark-First Premium UI:** Deep space aesthetic with vibrant blue/indigo glows and glassmorphism.
+- 🚀 **Next.js 15 & Turbopack:** Lightning-fast static generation and optimized assets.
+- 💫 **Scroll-Linked Animations:** Cinematic reveals, drawing SVG paths, and 3D tilting containers.
+- 📱 **Fully Responsive:** Perfectly adapts from 4K desktop monitors down to mobile devices.
+- 🎨 **Tailwind CSS v4:** Zero-config styling using the latest Tailwind inline theme engine.
+- 📈 **Built for Conversion:** Features an integrated sticky scroll-spy navbar and a high-converting Lead Form.
 
 ---
 
-## Google Tag Manager (GTM) Setup
+## 📸 Modules Showcase
 
-This project includes built-in Google Tag Manager support. It safely tracks the `lead_form_submit` event without hardcoding credentials in the codebase.
+Every module is architected to guide the user seamlessly through the performance marketing journey.
 
-### Configuration
-To enable GTM, add your Container ID to the `.env.local` file:
-```env
-NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
-```
+### 1. The Hero
+An immersive cinematic entrance featuring a breathing CSS gradient orb, live status indicators, and an instantly clear value proposition.
+<img src="public/readme/hero.png" alt="Hero Section" width="100%" />
 
-### Events Tracked
-- **`lead_form_submit`**: Fires automatically when a user successfully submits the lead form.
+### 2. The Problem Statement
+A split-screen module highlighting common pain points on the left, paired with a glowing SVG pipeline visualization on the right.
+<img src="public/readme/statement.png" alt="Statement Section" width="100%" />
 
-### Verification
-If `NEXT_PUBLIC_GTM_ID` is empty, the GTM script will not load, but the `window.dataLayer.push` commands will still fail silently without throwing console errors.
+### 3. The Performance System
+A horizontal-scroll (or grid) breakdown of the strategy, creative, and optimization unified approach.
+<img src="public/readme/system.png" alt="System Section" width="100%" />
+
+### 4. Real Results
+Clean, high-contrast metric cards that command attention and provide social proof.
+<img src="public/readme/results.png" alt="Results Section" width="100%" />
+
+### 5. The Process
+A sticky, dual-column scroll experience guiding the user through the 4 core steps (Discover, Build, Launch, Scale) alongside a custom scalable SVG machine assembly visualization.
+<img src="public/readme/process.png" alt="Process Section" width="100%" />
+
+### 6. The Final CTA Dashboard
+A stunning 3D isometric dashboard showcasing mock performance metrics, hovering glass badges, and glowing SVGs to drive the final call to action.
+<img src="public/readme/final_cta.png" alt="Final CTA Section" width="100%" />
+
+### 7. Lead Capture & Premium Footer
+A conversion-optimized lead capture form directly integrated with Google Sheets, grounded by a premium multi-column footer with a grid mask.
+<img src="public/readme/contact.png" alt="Contact Form" width="100%" />
+<img src="public/readme/footer.png" alt="Footer" width="100%" />
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 15 (App Router, Turbopack)
+- **Library:** React 19
+- **Styling:** Tailwind CSS v4
+- **Animations:** Framer Motion
+- **Icons:** Lucide React & Custom inline SVGs
+- **Fonts:** Inter & Caveat (via `next/font`)
+
+---
+
+## 🚀 Getting Started
+
+To run this project locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/nova-landing.git
+   cd nova-landing
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📁 Project Structure
+
+\`\`\`
+src/
+├── app/                  # Next.js App Router (layout, page, globals.css)
+├── components/
+│   ├── layout/           # Navbar, Footer, FloatingCTA
+│   ├── sections/         # The core modules (Hero, Statement, System, etc.)
+│   └── ui/               # Reusable UI components (Button, Card, Logo)
+└── lib/
+    ├── constants.ts      # ALL marketing copy & configuration
+    └── sheet.ts          # Google Sheets integration for Lead Form
+\`\`\`
+
+## 📝 Content Management
+All marketing copy, feature lists, metrics, and navigation links are stored centrally in `src/lib/constants.ts`. This allows you to update the entire site's messaging without touching the React components.
+
+---
+
+<div align="center">
+  <p>Designed and built for demonstration purposes. © 2026 NOVA.</p>
+</div>

@@ -53,7 +53,7 @@ export function Hero() {
     : containerVariants;
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Gradient orb background */}
       <GradientOrb />
 
