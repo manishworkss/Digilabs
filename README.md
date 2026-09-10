@@ -5,7 +5,7 @@
   
   **A premium, high-conversion landing page engineered for modern performance marketing agencies.**
   
-  [Live Demo](#) · [Report Bug](#) · [Request Feature](#)
+  [Live Demo](https://nova-landing-delta.vercel.app/) · [Report Bug](#) · [Request Feature](#)
 </div>
 
 <br />
@@ -106,6 +106,7 @@ src/
     ├── constants.ts      # ALL marketing copy & configuration
     └── sheet.ts          # Google Sheets integration for Lead Form
 \`\`\`
+```
 
 ## 📝 Content Management
 All marketing copy, feature lists, metrics, and navigation links are stored centrally in `src/lib/constants.ts`. This allows you to update the entire site's messaging without touching the React components.

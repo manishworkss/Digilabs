@@ -27,14 +27,49 @@ const caveat = Caveat({
 // ============================================================
 
 export const metadata: Metadata = {
-  title: "NOVA — Performance Marketing That Compounds",
+  metadataBase: new URL('https://nova-landing-delta.vercel.app'),
+  title: {
+    default: "NOVA — Performance Marketing That Compounds",
+    template: "%s | NOVA"
+  },
   description:
-    "NOVA builds, optimizes, and scales paid media systems that turn ad spend into predictable revenue.",
+    "NOVA builds, optimizes, and scales paid media systems that turn ad spend into predictable revenue. Stop guessing, start scaling with our performance-driven approach.",
+  keywords: ["performance marketing", "paid media", "digital marketing agency", "ROAS", "lead generation", "PPC", "growth marketing"],
+  authors: [{ name: "NOVA Performance" }],
+  creator: "NOVA Performance",
   openGraph: {
     title: "NOVA — Performance Marketing That Compounds",
     description:
       "NOVA builds, optimizes, and scales paid media systems that turn ad spend into predictable revenue.",
+    url: 'https://nova-landing-delta.vercel.app',
+    siteName: 'NOVA Performance',
+    images: [
+      {
+        url: '/og-image.jpg', // You can add an actual image here later
+        width: 1200,
+        height: 630,
+        alt: 'NOVA Performance Marketing',
+      },
+    ],
+    locale: 'en_US',
     type: "website",
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "NOVA — Performance Marketing That Compounds",
+    description: "NOVA builds, optimizes, and scales paid media systems that turn ad spend into predictable revenue.",
+    creator: '@novaperformance',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
