@@ -76,8 +76,8 @@ To run this project locally:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/nova-landing.git
-   cd nova-landing
+   git clone https://github.com/manishworkss/Digilabs.git
+   cd Digilabs
    ```
 
 2. **Install dependencies:**
